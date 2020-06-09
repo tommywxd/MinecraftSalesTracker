@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function animateValue(id, start, end, duration, usd) {
+    var obj = document.getElementById(id);
+    var range = end - start;
+	
+    var minTimer = 50;
+	
+    var stepTime = Math.abs(Math.floor(duration / range));
+    
+    stepTime = Math.max(stepTime, minTimer);
+
+    var startTime = new Date().getTime();
+    var endTime = startTime + duration;
+    var timer;
+  
+    function run() {
+        var now = new Date().getTime();
+        var remaining = Math.max((endTime - now) / duration, 0);
+        var value = Math.round(end - (remaining * range));
+		if(usd) {
+			obj.innerHTML = "Revenue: $" + value;
+		} else {
+			obj.innerHTML = "Sales: " + value;
+		}
+        if (value == end) {
+            clearInterval(timer);
+        }
+    }
+    
+    timer = setInterval(run, stepTime);
+    run();
+}
+
+$(document).ready(function(){
+	setInterval(function(){
+		$.post("/uwu",
+		function(data,status){
+			animateValue("p1", document.getElementById("p1").innerHTML.replace("Sales: ", ""), data, 5000, false);
+			animateValue("p2", document.getElementById("p2").innerHTML.replace("$", "").replace("Revenue: ", ""), data * 26.95, 5000, true);
+		});
+	}, 5200);
+});
+</script>
+<style>
+.title{
+    position: fixed;
+    top: 40%;
+    left: 40%;
+	font-size: 48px;
+}
+.tcenter{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+	font-size: 24px;
+}
+.bcenter{
+    position: fixed;
+    top: 55%;
+    left: 48%;
+	font-size: 24px;
+}
+</style>
+</head>
+<body>
+<div class="title">Minecraft Sales Tracker</div>
+<div class="tcenter" id="p1">Sales: 0</div>
+<div class="bcenter" id="p2">Revenue: $0</div>
+</body>
+</html>
